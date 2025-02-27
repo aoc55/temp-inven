@@ -1,0 +1,78 @@
+all:
+  hosts:
+    # k8s Control
+    cl-61-test-060:
+      ansible_host: 10.61.1.60
+      ip: 10.61.1.60
+    cl-61-test-061:
+      ansible_host: 10.61.1.61
+      ip: 10.61.1.61
+    cl-61-test-062:
+      ansible_host: 10.61.1.62
+      ip: 10.61.1.62
+
+    # OSP Master
+    cl-61-test-063:
+      ansible_host: 10.61.1.63
+      ip: 10.61.1.63
+    cl-61-test-064:
+      ansible_host: 10.61.1.64
+      ip: 10.61.1.64
+    cl-61-test-065:
+      ansible_host: 10.61.1.65
+      ip: 10.61.1.65
+
+    # OSP Compute
+    cl-61-test-066:
+      ansible_host: 10.61.1.66
+      ip: 10.61.1.66
+
+  children:
+    k8s_cluster:
+      vars:
+        kube_network_plugin: kube-ovn
+        kube_service_addresses: 10.233.0.0/18
+        kube_pods_subnet: 10.233.64.0/18
+        cluster_name: cluster.local
+        kube_ovn_iface: ens4
+        kube_ovn_default_interface_name: ens4
+        kube_ovn_central_hosts: "{{ groups['ovn_network_nodes'] }}"
+      children:
+        kube_control_plane:
+          hosts:
+            cl-61-test-060: null
+            cl-61-test-061: null
+            cl-61-test-062: null
+
+        etcd:
+          hosts:
+            cl-61-test-060: null
+            cl-61-test-061: null
+            cl-61-test-062: null
+
+        kube_node:
+          hosts:
+            cl-61-test-063: null
+            cl-61-test-064: null
+            cl-61-test-065: null
+            cl-61-test-066: null
+
+        openstack_control_plane:
+          hosts:
+            cl-61-test-063: null
+            cl-61-test-064: null
+            cl-61-test-065: null
+
+        ovn_network_nodes:
+          hosts:
+            cl-61-test-066: null
+
+        storage_nodes:
+          children:
+            cinder_storage_nodes:
+              hosts:
+                cl-61-test-066: null
+
+        openstack_compute_nodes:
+          hosts:
+            cl-61-test-066: null
